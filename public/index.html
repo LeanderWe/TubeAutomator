@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TubeAutomator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>TubeAutomator</h1>
+        <p>YouTube Video Automation Tool</p>
+    </header>
+
+    <main>
+        <section class="download-section">
+            <h2>Download Video</h2>
+            <div class="form-group">
+                <input type="url" id="videoUrl" placeholder="Enter YouTube URL..." required>
+                <button onclick="getVideoInfo()">Get Info</button>
+            </div>
+
+            <div id="videoInfo" class="video-info" style="display: none;">
+                <h3>Video Information</h3>
+                <div id="infoContent"></div>
+                <button onclick="downloadVideo()">Download</button>
+            </div>
+        </section>
+
+        <section class="files-section">
+            <h2>Downloaded Files</h2>
+            <button onclick="loadFiles()">Refresh</button>
+            <div id="filesList" class="files-list"></div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
