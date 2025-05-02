@@ -2,14 +2,25 @@ const express = require('express');
 const DownloadService = require('./services/downloadService');
 const VideoProcessor = require('./services/videoProcessor');
 const FileUtils = require('./utils/fileUtils');
+const { errorHandler } = require('./middleware/errorHandler');
+const config = require('./config/config');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = config.get('server.port');
 
 const downloadService = new DownloadService();
 const videoProcessor = new VideoProcessor();
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
+
+if (config.get('api.corsEnabled')) {
+    app.use((req, res, next) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        next();
+    });
+}
 
 app.get('/', (req, res) => {
     res.sendFile('index.html', { root: './public' });
@@ -106,6 +117,15 @@ app.get('/processed', (req, res) => {
     res.json(fileList);
 });
 
+app.use(errorHandler);
+
+process.on('unhandledRejection', (err, promise) => {
+    console.log(`Error: ${err.message}`);
+    process.exit(1);
+});
+
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`TubeAutomator server running on ${config.get('server.host')}:${PORT}`);
+    console.log(`Download directory: ${config.get('downloads.directory')}`);
+    console.log(`Processing directory: ${config.get('processing.outputDirectory')}`);
 });

@@ -1,0 +1,34 @@
+{
+  "server": {
+    "port": 3000,
+    "host": "localhost"
+  },
+  "downloads": {
+    "directory": "downloads",
+    "maxFileSize": "1GB",
+    "allowedFormats": ["mp4", "webm", "flv"],
+    "defaultQuality": "highest"
+  },
+  "processing": {
+    "outputDirectory": "processed",
+    "tempDirectory": "temp",
+    "ffmpegPath": "ffmpeg",
+    "compressionPresets": {
+      "low": { "crf": 30, "preset": "fast" },
+      "medium": { "crf": 25, "preset": "medium" },
+      "high": { "crf": 20, "preset": "slow" }
+    }
+  },
+  "scheduler": {
+    "maxConcurrentTasks": 3,
+    "cleanupSchedule": "0 2 * * *",
+    "retentionDays": 30
+  },
+  "api": {
+    "rateLimit": {
+      "windowMs": 900000,
+      "max": 100
+    },
+    "corsEnabled": true
+  }
+}
