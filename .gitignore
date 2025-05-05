@@ -40,3 +40,4 @@ tmp/
 
 # logs
 *.log
+logs/

@@ -4,6 +4,7 @@ const VideoProcessor = require('./services/videoProcessor');
 const FileUtils = require('./utils/fileUtils');
 const { errorHandler } = require('./middleware/errorHandler');
 const config = require('./config/config');
+const logger = require('./utils/logger');
 const app = express();
 const PORT = config.get('server.port');
 
@@ -12,6 +13,7 @@ const videoProcessor = new VideoProcessor();
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
+app.use(logger.http.bind(logger));
 
 if (config.get('api.corsEnabled')) {
     app.use((req, res, next) => {
@@ -120,12 +122,21 @@ app.get('/processed', (req, res) => {
 app.use(errorHandler);
 
 process.on('unhandledRejection', (err, promise) => {
-    console.log(`Error: ${err.message}`);
+    logger.error('Unhandled Promise Rejection', { error: err.message, stack: err.stack });
+    process.exit(1);
+});
+
+process.on('uncaughtException', (err) => {
+    logger.error('Uncaught Exception', { error: err.message, stack: err.stack });
     process.exit(1);
 });
 
 app.listen(PORT, () => {
-    console.log(`TubeAutomator server running on ${config.get('server.host')}:${PORT}`);
-    console.log(`Download directory: ${config.get('downloads.directory')}`);
-    console.log(`Processing directory: ${config.get('processing.outputDirectory')}`);
+    logger.info('TubeAutomator server started', {
+        host: config.get('server.host'),
+        port: PORT,
+        downloadDir: config.get('downloads.directory'),
+        processingDir: config.get('processing.outputDirectory'),
+        environment: process.env.NODE_ENV || 'development'
+    });
 });
